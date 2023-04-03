@@ -3,7 +3,7 @@
 
   <groupId>org.lucee</groupId>
   <artifactId>lucee</artifactId>
-  <version>5.4.0.40-SNAPSHOT</version>
+  <version>5.4.0.37</version>
   <packaging>jar</packaging>
 
   <name>Lucee Loader Build</name>
@@ -198,9 +198,7 @@
                     <property name="runtime_classpath" refid="maven.runtime.classpath" />
 
                     <property name="outputDir" value="${project.build.outputDirectory}" />
-                    <property name="testcases" value="true" />
-
-
+                    <property name="testcases" value="false" />
 
                     <!-- <property name="sourceDir" value="${project.build.sourceDirectory}" /> -->
                     <property name="baseDir" value="${basedir}" />
@@ -292,7 +290,11 @@
 
 
 	<dependencies>
-
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.14.2</version>
+    </dependency>
   <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>

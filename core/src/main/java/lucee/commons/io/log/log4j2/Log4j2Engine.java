@@ -3,6 +3,7 @@ package lucee.commons.io.log.log4j2;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,10 +17,12 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
 import org.apache.logging.log4j.core.layout.HtmlLayout;
 import org.apache.logging.log4j.core.layout.HtmlLayout.Builder;
 import org.apache.logging.log4j.core.layout.HtmlLayout.FontSize;
+import org.apache.logging.log4j.core.layout.JsonLayout;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.osgi.framework.Bundle;
@@ -144,6 +147,9 @@ public class Log4j2Engine extends LogEngine {
 		if ("datadog".equalsIgnoreCase(className) || className.indexOf(".DataDogLayout") != -1) {
 			return new ClassDefinitionImpl(DataDogLayout.class);
 		}
+		if ("json".equalsIgnoreCase(className)) {
+			return new ClassDefinitionImpl(JsonLayout.class);
+		}
 
 		return new ClassDefinitionImpl(className);
 	}
@@ -242,8 +248,25 @@ public class Log4j2Engine extends LogEngine {
 			else if (cd.getClassName().indexOf(".DataDogLayout") != -1) {
 				layout = new DataDogLayout();
 			}
-			// class definition
-			else {
+			// JSON Layout
+			else if (JsonLayout.class.getName().equalsIgnoreCase(cd.getClassName())) {
+				layout = JsonLayout.newBuilder()
+						.setConfiguration(new DefaultConfiguration())
+						.setLocationInfo(false)
+						.setProperties(false)
+						.setCompact(true)
+						.setComplete(false)
+						.setEventEol(true)
+						.setEndOfLine(null)
+						.setCharset(StandardCharsets.UTF_8)
+						.setIncludeStacktrace(true)
+						.setStacktraceAsString(true)
+						.setIncludeNullDelimiter(false)
+						.setIncludeTimeMillis(false)
+						.setAdditionalFields(null)
+						.setObjectMessageAsJsonObject(false)
+						.build();
+			} else {
 				// MUST that will no longer work that way
 				Object obj = ClassUtil.loadInstance(cd.getClazz(null), null, null);
 				if (obj instanceof Layout) {
